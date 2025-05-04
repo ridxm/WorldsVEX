@@ -1,11 +1,25 @@
 #pragma once
 
 #include "EZ-Template/api.hpp"
+#include "EZ-Template/piston.hpp"
 #include "api.h"
 
 extern Drive chassis;
 
-// Your motors, sensors, etc. should go here.  Below are examples
 
-// inline pros::Motor intake(1);
-// inline pros::adi::DigitalIn limit_switch('A');
+inline pros::MotorGroup rollers({2, -9});
+inline pros::MotorGroup ladyBrown({1, -10});
+
+inline pros::Optical color(3);
+
+
+inline ez::Piston clampPiston ('A');
+inline ez::Piston leftDoinker('B');
+inline ez::Piston leftDoinkerClaw('C');
+inline ez::Piston rightDoinker('D');
+inline ez::Piston rightDoinkerClaw('E');
+inline ez::Piston flipperPiston('F');
+inline ez::Piston lbExpand('G');
+
+
+

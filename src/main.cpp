@@ -2,6 +2,8 @@
 
 #include "autons.hpp"
 #include "constants.hpp"
+#include "pros/motors.h"
+#include "subsystems.hpp"
 
 /////
 // For installation, upgrading, documentations, and tutorials, check out our website!
@@ -11,17 +13,17 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {-1, -17, 18, -19},  // Left Chassis Ports (negative port will reverse it!)
-    {11, 12, -13, 14},   // Right Chassis Ports (negative port will reverse it!)
+    {11, -12, -13, 14, -15},  // Left Chassis Ports (negative port will reverse it!)
+    {16, -17, 18, -19, 20},   // Right Chassis Ports (negative port will reverse it!)
 
     10,      // IMU Port
-    3.4125,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
-    450);    // Wheel RPM = cartridge * (motor gear / wheel gear)
+    2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
+    600);    // Wheel RPM = cartridge * (motor gear / wheel gear)
 
 // Uncomment the trackers you're using here!
 // - `8` and `9` are smart ports (making these negative will reverse the sensor)
 //  - you should get positive values on the encoders going FORWARD and RIGHT
-// - `2.75` is the wheel diameter
+// - `2.75` is the w heel diameter
 // - `4.0` is the distance from the center of the wheel to the center of the robot
 // ez::tracking_wheel horiz_tracker(8, 2.75, 4.0);  // This tracking wheel is perpendicular to the drive wheels
 // ez::tracking_wheel vert_tracker(9, 2.75, 4.0);   // This tracking wheel is parallel to the drive wheels
@@ -37,6 +39,7 @@ void initialize() {
   ez::ez_template_print();
 
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
+  
 
   // Look at your horizontal tracking wheel and decide if it's in front of the midline of your robot or behind it
   //  - change `back` to `front` if the tracking wheel is in front of the midline
@@ -247,14 +250,14 @@ void ez_template_extras() {
  */
 void opcontrol() {
   // This is preference to what you like to drive on
-  // chassis.drive_brake_set(MOTOR_BRAKE_COAST);
+  chassis.drive_brake_set(pros::E_MOTOR_BRAKE_BRAKE);
 
   while (true) {
     // Gives you some extras to make EZ-Template ezier
     // ez_template_extras();
 
-    chassis.opcontrol_tank();  // Tank control
-    // chassis.opcontrol_arcade_standard(ez::SPLIT);   // Standard split arcade
+    // chassis.opcontrol_tank();  // Tank control
+    chassis.opcontrol_arcade_standard(ez::SPLIT);   // Standard split arcade
     // chassis.opcontrol_arcade_standard(ez::SINGLE);  // Standard single arcade
     // chassis.opcontrol_arcade_flipped(ez::SPLIT);    // Flipped split arcade
     // chassis.opcontrol_arcade_flipped(ez::SINGLE);   // Flipped single arcade
@@ -263,6 +266,41 @@ void opcontrol() {
     // Put more user control code here!
     // . . .
 
-    pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
+    pros::DeviceType dt = pros::Device::get_plugged_type(10);
+    int dt_val = static_cast<int>(dt);
+  // Line 5, formatted print of the enum’s underlying integer
+  pros::lcd::print(5, "Device type: %d", dt_val);
+
+
+
+
+  if(master.get_digital(DIGITAL_R1)){
+    rollers.move(127);
+  }
+  else if(master.get_digital(DIGITAL_R2)){
+    rollers.move(-127);
+  }
+  else{
+    rollers.brake();
+  }
+
+  if(master.get_digital(DIGITAL_L1)){
+    ladyBrown.move(127);
+  }
+  else if(master.get_digital(DIGITAL_L2)){
+    ladyBrown.move(-127);
+  }
+  else{
+    ladyBrown.brake();
+  }
+
+  clampPiston.button_toggle(master.get_digital(DIGITAL_B));
+  rightDoinker.set(master.get_digital(DIGITAL_Y) && !flipperPiston.get());
+
+    leftDoinker.set(master.get_digital(DIGITAL_RIGHT) && !flipperPiston.get());
+
+    flipperPiston.set(master.get_digital(DIGITAL_DOWN) && !rightDoinker.get() && !leftDoinker.get());
+
+  pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
 }
