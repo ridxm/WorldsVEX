@@ -1,7 +1,8 @@
+#include "autons.hpp"
 #include "constants.hpp"
 #include "main.h"
 
-void drive_and_turn() {
+void red_blue() {
   chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
   chassis.pid_wait();
 

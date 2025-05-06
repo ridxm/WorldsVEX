@@ -1,21 +1,19 @@
 #pragma once
 
-
 enum side {
-    RED,
-    BLUE
+  RED,
+  BLUE
 };
+
 enum bot {
-    BIG,
-    SMALL
+  BIG,
+  SMALL
 };
-static bot currentBot = SMALL;
-static side fieldColor = RED;
 
-//RED AUTONS
-void drive_example();
-void drive_and_turn();
-void turn_example();
+extern bot currentBot = SMALL;
+extern side fieldColor = RED;
 
-//BLACK AUTONS
-void testbig();
+void black_blue();
+void black_red();
+void red_blue();
+void red_red();

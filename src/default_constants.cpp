@@ -2,7 +2,7 @@
 #include "main.h"
 
 void default_constants() {
-  if(currentBot == BIG){
+  if (currentBot == BIG) {
     // P, I, D, and Start I
     chassis.pid_drive_constants_set(40.0, 0.0, 250.0);         // Fwd/rev constants, used for odom and non odom motions
     chassis.pid_heading_constants_set(11.0, 0.0, 20.0);        // Holds the robot straight while going forward without odom
@@ -36,7 +36,8 @@ void default_constants() {
 
     chassis.pid_angle_behavior_set(ez::shortest);  // Changes the default behavior for turning, this defaults it to the shortest path there
   }
-  else{
+
+  else {
     // P, I, D, and Start I
     chassis.pid_drive_constants_set(40.0, 0.0, 250.0);         // Fwd/rev constants, used for odom and non odom motions
     chassis.pid_heading_constants_set(11.0, 0.0, 20.0);        // Holds the robot straight while going forward without odom
@@ -70,7 +71,4 @@ void default_constants() {
 
     chassis.pid_angle_behavior_set(ez::shortest);  // Changes the default behavior for turning, this defaults it to the shortest path there
   }
-  
 }
-
-

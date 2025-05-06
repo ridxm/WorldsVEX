@@ -6,58 +6,52 @@
 #include "subsystems.hpp"
 
 // // Chassis constructor
-ez::Drive chassis(
-  // These are your drive motors, the first motor is used for sensing!
-  {11, -12, -13, 14, -15},  // Left Chassis Ports (negative port will reverse it!)
-  {16, -17, 18, -19, 20},   // Right Chassis Ports (negative port will reverse it!)
-
-  10,      // IMU Port
-  2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
-  600);    // Wheel RPM = cartridge * (motor gear / wheel gear)
-
-
-// if(currentBot == BIG){
-//   ez::Drive chassis(
+// ez::Drive chassis(
 //     // These are your drive motors, the first motor is used for sensing!
 //     {11, -12, -13, 14, -15},  // Left Chassis Ports (negative port will reverse it!)
 //     {16, -17, 18, -19, 20},   // Right Chassis Ports (negative port will reverse it!)
-  
-//     10,      // IMU Port
-//     2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
-//     600);    // Wheel RPM = cartridge * (motor gear / wheel gear)
-// }
-// else{
-//   ez::Drive chassis(
-//     // These are your drive motors, the first motor is used for sensing!
-//     {-11, 12, -13, 14, -15},  // Left Chassis Ports (negative port will reverse it!)
-//     {16, -17, 18, -19, 20},   // Right Chassis Ports (negative port will reverse it!)
-  
-//     21,      // IMU Port
-//     2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
-//     600);    // Wheel RPM = cartridge * (motor gear / wheel gear)
-// }
 
-
+//     10,    // IMU Port
+//     2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
+//     600);  // Wheel RPM = cartridge * (motor gear / wheel gear)
 
 void initialize() {
-  //determines which bot the code is on
+  if (currentBot == BIG) {
+    ez::Drive chassis(
+        // These are your drive motors, the first motor is used for sensing!
+        {11, -12, -13, 14, -15},  // Left Chassis Ports (negative port will reverse it!)
+        {16, -17, 18, -19, 20},   // Right Chassis Ports (negative port will reverse it!)
+
+        10,    // IMU Port
+        2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
+        600);  // Wheel RPM = cartridge * (motor gear / wheel gear)
+  } else {
+    ez::Drive chassis(
+        // These are your drive motors, the first motor is used for sensing!
+        {-11, 12, -13, 14, -15},  // Left Chassis Ports (negative port will reverse it!)
+        {16, -17, 18, -19, 20},   // Right Chassis Ports (negative port will reverse it!)
+
+        21,    // IMU Port
+        2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
+        600);  // Wheel RPM = cartridge * (motor gear / wheel gear)
+  }
+  // determines which bot the code is on
   pros::DeviceType dt = pros::Device::get_plugged_type(3);
   int dt_val = static_cast<int>(dt);
 
-  if(dt_val == 2){
+  if (dt_val == 2) {
     currentBot = SMALL;
-  }
-  else{
+  } else {
     currentBot = BIG;
   }
-// Line 5, formatted print of the enum’s underlying integer
-// pros::lcd::print(5, "Device type: %d", dt_val);
+  // Line 5, formatted print of the enum’s underlying integer
+  // pros::lcd::print(5, "Device type: %d", dt_val);
 
   ez::ez_template_print();
 
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
 
-  chassis.opcontrol_curve_buttons_toggle(false);   // Enables modifying the controller curve with buttons on the joysticks
+  chassis.opcontrol_curve_buttons_toggle(false);  // Enables modifying the controller curve with buttons on the joysticks
   chassis.opcontrol_drive_activebrake_set(0.0);   // Sets the active brake kP. We recommend ~2.  0 will disable.
   chassis.opcontrol_curve_default_set(0.0, 0.0);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
@@ -65,18 +59,19 @@ void initialize() {
   default_constants();
 
   // // Autonomous Selector using LLEMU
-  if(currentBot){
+  if (currentBot) {
     ez::as::auton_selector.autons_add({
-      {"Drive\n\nDrive forward and come back", drive_example},
-      {"Turn\n\nTurn 3 times.", turn_example},
-      {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
+        {"black blue drive", black_blue},
+        {"black red drive", black_red},
+        {"red blue drive", red_blue},
+        {"red red drive", red_red},
     });
-  }
-  else{
+  } else {
     ez::as::auton_selector.autons_add({
-      {"Drive\n\nDrive forward and come back", drive_example},
-      {"Turn\n\nTurn 3 times.", turn_example},
-      {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
+        {"black blue drive", black_blue},
+        {"black red drive", black_red},
+        {"red blue drive", red_blue},
+        {"red red drive", red_red},
     });
   }
 
@@ -91,8 +86,8 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-  default_constants();
-  drive_example();
+  // default_constants();
+  // drive_and_turn();
 
   // chassis.pid_targets_reset();                // Resets PID targets to 0
   // chassis.drive_imu_reset();                  // Reset gyro position to 0
@@ -100,6 +95,22 @@ void autonomous() {
   // chassis.odom_xyt_set(0_in, 0_in, 0_deg);    // Set the current position, you can start at a specific position with this
   // chassis.drive_brake_set(MOTOR_BRAKE_HOLD);  // Set motors to hold.  This helps autonomous consistency
   // ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+
+  default_constants();
+
+  if (currentBot == BIG) {
+    if (fieldColor == RED) {
+      black_red();
+    } else {
+      black_blue();
+    }
+  } else {
+    if (fieldColor == RED) {
+      red_red();
+    } else {
+      red_blue();
+    }
+  }
 }
 
 /**
@@ -201,7 +212,7 @@ void opcontrol() {
     // ez_template_extras();
 
     // chassis.opcontrol_tank();  // Tank control
-    chassis.opcontrol_arcade_standard(ez::SPLIT);   // Standard split arcade
+    chassis.opcontrol_arcade_standard(ez::SPLIT);  // Standard split arcade
     // chassis.opcontrol_arcade_standard(ez::SINGLE);  // Standard single arcade
     // chassis.opcontrol_arcade_flipped(ez::SPLIT);    // Flipped split arcade
     // chassis.opcontrol_arcade_flipped(ez::SINGLE);   // Flipped single arcade
@@ -210,33 +221,29 @@ void opcontrol() {
     // Put more user control code here!
     // . . .
 
-  if(master.get_digital(DIGITAL_R1)){
-    intake.move(127);
-  }
-  else if(master.get_digital(DIGITAL_R2)){
-    intake.move(-127);
-  }
-  else{
-    intake.brake();
-  }
+    if (master.get_digital(DIGITAL_R1)) {
+      intake.move(127);
+    } else if (master.get_digital(DIGITAL_R2)) {
+      intake.move(-127);
+    } else {
+      intake.brake();
+    }
 
-  if(master.get_digital(DIGITAL_L1)){
-    ladyBrown.move(127);
-  }
-  else if(master.get_digital(DIGITAL_L2)){
-    ladyBrown.move(-127);
-  }
-  else{
-    ladyBrown.brake();
-  }
+    if (master.get_digital(DIGITAL_L1)) {
+      ladyBrown.move(127);
+    } else if (master.get_digital(DIGITAL_L2)) {
+      ladyBrown.move(-127);
+    } else {
+      ladyBrown.brake();
+    }
 
-  clampPiston.button_toggle(master.get_digital(DIGITAL_B));
-  rightDoinker.set(master.get_digital(DIGITAL_Y) && !flipperPiston.get());
+    clampPiston.button_toggle(master.get_digital(DIGITAL_B));
+    rightDoinker.set(master.get_digital(DIGITAL_Y) && !flipperPiston.get());
 
     leftDoinker.set(master.get_digital(DIGITAL_RIGHT) && !flipperPiston.get());
 
     flipperPiston.set(master.get_digital(DIGITAL_DOWN) && !rightDoinker.get() && !leftDoinker.get());
 
-  pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
+    pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
 }
