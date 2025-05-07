@@ -10,8 +10,8 @@ enum bot {
   SMALL
 };
 
-extern bot currentBot = SMALL;
-extern side fieldColor = RED;
+static bot currentBot = SMALL;
+static side fieldColor = RED;
 
 void black_blue();
 void black_red();
