@@ -5,13 +5,11 @@
 
 extern Drive chassis;
 
-
-inline pros::MotorGroup rollers({2, -9});
+inline pros::MotorGroup intake({2, -9});
 inline pros::MotorGroup ladyBrown({1, -10});
 
 inline pros::Rotation lb_rotation(8);
 inline pros::Optical color(7);
-
 
 inline ez::Piston clampPiston('A', false);
 inline ez::Piston flipperPiston('G', false);

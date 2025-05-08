@@ -2,7 +2,7 @@
 
 void default_constants();
 
-void drive_example();
+void safe_autos();
 void turn_example();
 void drive_and_turn();
 void wait_until_change_speed();

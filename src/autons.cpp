@@ -7,7 +7,7 @@
 
 // These are out of 127
 const int DRIVE_SPEED = 100;
-const int TURN_SPEED = 90;
+const int TURN_SPEED = 40;
 const int SWING_SPEED = 110;
 
 ///
@@ -46,25 +46,109 @@ void default_constants() {
   chassis.odom_boomerang_dlead_set(0.625);     // This handles how aggressive the end of boomerang motions are
 
   chassis.pid_angle_behavior_set(ez::shortest);  // Changes the default behavior for turning, this defaults it to the shortest path there
+  chassis.drive_imu_scaler_set(1.001);
 }
 
 ///
 // Drive Example
 ///
-void drive_example() {
-  // The first parameter is target inches
-  // The second parameter is max speed the robot will drive at
-  // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
-  // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
+void safe_autos() {
+  ladyBrown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  chassis.drive_angle_set(-145_deg);
 
-  chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
+  chassis.pid_drive_set(-20_in, DRIVE_SPEED, true);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-12_in, DRIVE_SPEED);
+  chassis.pid_turn_set(90_deg, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-12_in, DRIVE_SPEED);
+  chassis.pid_drive_set(-30_in, 50, true);
   chassis.pid_wait();
+
+  clampPiston.set(true);
+  pros::delay(500);
+
+  chassis.pid_turn_set(85_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(180_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  intake.move(127);
+  pros::delay(1000);
+
+  chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // intake.move(0);
+  pros::delay(500);
+
+  chassis.pid_drive_set(-7_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(90_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(50_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(135_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(1500);
+
+  intake.brake();
+  pros::delay(100);
+  intake.move(-127);
+
+  chassis.pid_drive_set(32_in, 30, true);
+  chassis.pid_wait();
+
+  pros::delay(500);
+
+  intake.move(127);
+
+  pros::delay(1500);
+
+  chassis.pid_drive_set(-8_in, 30);
+  chassis.pid_wait();
+
+  pros::delay(1500);
+
+  chassis.pid_turn_set(-90_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(500);
+
+  chassis.pid_drive_set(110_in, 60, true);
+  chassis.pid_wait();
+
+  pros::delay(1500);
+
+  intake.brake();
+  pros::delay(100);
+
+  chassis.pid_turn_set(45_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-10_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  clampPiston.set(false);
+  pros::delay(500);
+
+  chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // pros::delay(1500);
+
+  // chasssis.pid_turn_set(-90_deg, TURN_SPEED);
+
+  // chassis.pid_drive_set(24_in, 50, true);
+  // chassis.pid_wait();
 }
 
 ///
@@ -75,12 +159,6 @@ void turn_example() {
   // The second parameter is max speed the robot will drive at
 
   chassis.pid_turn_set(90_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(45_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(0_deg, TURN_SPEED);
   chassis.pid_wait();
 }
 
@@ -328,7 +406,7 @@ void measure_offsets() {
   if (chassis.odom_tracker_right != nullptr) chassis.odom_tracker_right->reset();
   if (chassis.odom_tracker_back != nullptr) chassis.odom_tracker_back->reset();
   if (chassis.odom_tracker_front != nullptr) chassis.odom_tracker_front->reset();
-  
+
   for (int i = 0; i < iterations; i++) {
     // Reset pid targets and get ready for running an auton
     chassis.pid_targets_reset();

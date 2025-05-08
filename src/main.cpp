@@ -1,4 +1,5 @@
 #include "main.h"
+
 #include "pros/rotation.hpp"
 #include "subsystems.hpp"
 
@@ -7,19 +8,25 @@
 // https://ez-robotics.github.io/EZ-Template/
 /////
 
+// const int numStates = 3;
+// // make sure these are in centidegrees (1 degree = 100 centidegrees)
+// int states[numStates] = {0, 300, 2000};
+// int currState = 0;
+// int target = 0;
+
 // Chassis constructor
 ez::Drive chassis(
-  // These are your drive motors, the first motor is used for sensing!
-  {-11, 12, -13, 14, -15},  // Left Chassis Ports (negative port will reverse it!)
-  {16, -17, 18, -19, 20},   // Right Chassis Ports (negative port will reverse it!)
+    // These are your drive motors, the first motor is used for sensing!
+    {-11, 12, -13, 14, -15},  // Left Chassis Ports (negative port will reverse it!)
+    {16, -17, 18, -19, 20},   // Right Chassis Ports (negative port will reverse it!)
 
-  21,      // IMU Port
-  2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
-  600);   // Wheel RPM = cartridge * (motor gear / wheel gear)
+    21,    // IMU Port
+    2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
+    600);  // Wheel RPM = cartridge * (motor gear / wheel gear)
 
 // Uncomment the trackers you're using here!
 // - `8` and `9` are smart ports (making these negative will reverse the sensor)
-//  - you should get positive values on the encoders going FORWARD and RIGHT 
+//  - you should get positive values on the encoders going FORWARD and RIGHT
 // - `2.75` is the wheel diameter
 // - `4.0` is the distance from the center of the wheel to the center of the robot
 // ez::tracking_wheel horiz_tracker(8, 2.75, 4.0);  // This tracking wheel is perpendicular to the drive wheels
@@ -32,7 +39,20 @@ ez::Drive chassis(
  * to keep execution time for this mode under a few seconds.
  */
 
-//  pros::Rotation lb_rotation(8);
+// void nextState() {
+//   currState += 1;
+//   if (currState == numStates) {
+//     currState = 0;
+//   }
+//   target = states[currState];
+// }
+
+// void liftControl() {
+//   double kp = 0.5;
+//   double error = target - lb_rotation.get_position();
+//   double velocity = kp * error;
+//   ladyBrown.move(velocity);
+// }
 
 void initialize() {
   // Print our branding over your terminal :D
@@ -40,10 +60,8 @@ void initialize() {
 
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
 
-
-
   // Configure your chassis controls
-  chassis.opcontrol_curve_buttons_toggle(false);   // Enables modifying the controller curve with buttons on the joysticks
+  chassis.opcontrol_curve_buttons_toggle(false);  // Enables modifying the controller curve with buttons on the joysticks
   // chassis.opcontrol_drive_activebrake_set(0.0);   // Sets the active brake kP. We recommend ~2.  0 will disable.
   // chassis.opcontrol_curve_default_set(0.0, 0.0);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
@@ -56,7 +74,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Drive\n\nDrive forward and come back", drive_example},
+      {"Drive\n\nDrive forward and come back", safe_autos},
       {"Turn\n\nTurn 3 times.", turn_example},
       {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
       {"Drive and Turn\n\nSlow down during drive", wait_until_change_speed},
@@ -72,7 +90,7 @@ void initialize() {
       {"Measure Offsets\n\nThis will turn the robot a bunch of times and calculate your offsets for your tracking wheels.", measure_offsets},
   });
 
-    lb_rotation.reset();
+  lb_rotation.reset();
   // Initialize chassis and auton selector
   chassis.initialize();
   ez::as::initialize();
@@ -95,7 +113,7 @@ void nextState() {
 }
 
 void liftControl() {
-  double kp = 0.03;
+  double kp = 1;
   double error = target - lb_rotation.get_position();
   double velocity = kp * error;
   pros::lcd::set_text(1, std::to_string(velocity));
@@ -266,13 +284,19 @@ void ez_template_extras() {
 void opcontrol() {
   // This is preference to what you like to drive on
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
+  // pros::Task liftControlTask([] {
+  //   while (true) {
+  //     liftControl();
+  //     pros::delay(10);
+  //   }
+  // });
 
   while (true) {
     // Gives you some extras to make EZ-Template ezier
     ez_template_extras();
 
     // chassis.opcontrol_tank();  // Tank control
-    chassis.opcontrol_arcade_standard(ez::SPLIT);   // Standard split arcade
+    chassis.opcontrol_arcade_standard(ez::SPLIT);  // Standard split arcade
     // chassis.opcontrol_arcade_standard(ez::SINGLE);  // Standard single arcade
     // chassis.opcontrol_arcade_flipped(ez::SPLIT);    // Flipped split arcade
     // chassis.opcontrol_arcade_flipped(ez::SINGLE);   // Flipped single arcade
@@ -281,20 +305,26 @@ void opcontrol() {
     // Put more user control code here!
     // . . .
 
-    if(master.get_digital(DIGITAL_R1)){
-      rollers.move(127);
-    }
-    else if(master.get_digital(DIGITAL_R2)){
-      rollers.move(-127);
-    }
-    else{
-      rollers.brake();
-    }
-
-    if(master.get_digital_new_press(DIGITAL_L1)){
+    if (master.get_digital_new_press(DIGITAL_X)) {
       nextState();
     }
+    pros::delay(20);
 
+    if (master.get_digital(DIGITAL_R1)) {
+      intake.move(127);
+    } else if (master.get_digital(DIGITAL_R2)) {
+      intake.move(-127);
+    } else {
+      intake.brake();
+    }
+
+    if (master.get_digital(DIGITAL_L1)) {
+      ladyBrown.move(127);
+    } else if (master.get_digital(DIGITAL_L2)) {
+      ladyBrown.move(-127);
+    } else {
+      ladyBrown.brake();
+    }
 
     clampPiston.button_toggle(master.get_digital(DIGITAL_B));
 
