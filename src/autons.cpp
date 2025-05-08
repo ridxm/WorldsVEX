@@ -7,7 +7,7 @@
 
 // These are out of 127
 const int DRIVE_SPEED = 100;
-const int TURN_SPEED = 40;
+const int TURN_SPEED = 55;
 const int SWING_SPEED = 110;
 
 ///
@@ -119,10 +119,12 @@ void safe_autos_blue() {
 
   pros::delay(500);
 
-  chassis.pid_drive_set(110_in, 60, true);
+  chassis.pid_drive_set(110_in, 100, true);
+  chassis.pid_wait_until(70_in);
+  chassis.pid_speed_max_set(60);
   chassis.pid_wait();
 
-  pros::delay(1500);
+  pros::delay(1000);
 
   intake.brake();
   pros::delay(100);

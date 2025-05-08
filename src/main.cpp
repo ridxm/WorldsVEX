@@ -74,7 +74,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      // {"Safe - Blue", safe_autos_blue},
+      {"Safe - Blue", safe_autos_blue},
       {"Safe - Red", safe_autos_red},
   });
 
