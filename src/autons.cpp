@@ -1,4 +1,5 @@
 #include "main.h"
+#include "subsystems.hpp"
 
 /////
 // For installation, upgrading, documentations, and tutorials, check out our website!
@@ -65,108 +66,58 @@ void liftControlAuto() {
 
 
 void safe_autos_blue() {
-  pros::Task liftControlAutoTask(liftControlAuto);  // unjam function in helpers
-  liftControlAutoTask.resume();
 
-  ladyBrown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  target = 100;
-  chassis.pid_turn_set(10_deg, TURN_SPEED);
-  chassis.pid_wait();
+  chassis.drive_angle_set(27_deg);
 
-  pros::delay(199000);
-
-
-  //START
+//   pros::delay(1000);
   
-  chassis.drive_angle_set(-145_deg);
+// chassis.pid_turn_set(-90_deg, TURN_SPEED);
+// chassis.pid_wait();
 
-  chassis.pid_drive_set(-20_in, DRIVE_SPEED, true);
+// pros::delay(5000);
+
+  ez::Piston leftDoinker('A', false);
+ez::Piston doinkerClaw('B', false);
+
+  // leftDoinker.set(true);
+  // pros::delay(1000);
+  // leftDoinker.set(false);
+  // pros::delay(1000);
+  chassis.pid_drive_set(21_in, 127);
+  chassis.pid_wait_until(4_in);
+  leftDoinker.set(true);
+  doinkerClaw.set(true);
+  pros::delay(350);
+  doinkerClaw.set(false);
+  pros::delay(50);
+  leftDoinker.set(false);
+  chassis.pid_wait();
+  
+
+  chassis.pid_drive_set(-15_in, 127, true);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(90_deg, TURN_SPEED);
+  leftDoinker.set(true);
+  pros::delay(100);
+  doinkerClaw.set(true);
+
+
+  chassis.pid_drive_set(-8_in, 80, true);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-30_in, 50, true);
+  leftDoinker.set(false);
+
+  chassis.pid_turn_set(185_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-8_in, 40, true);
   chassis.pid_wait();
 
   clampPiston.set(true);
-  pros::delay(500);
 
-  chassis.pid_turn_set(85_deg, TURN_SPEED);
-  chassis.pid_wait();
 
-  chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
 
-  chassis.pid_turn_set(180_deg, TURN_SPEED);
-  chassis.pid_wait();
 
-  intake.move(127);
-  pros::delay(1000);
-
-  chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-
-  pros::delay(500);
-
-  chassis.pid_drive_set(-7_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(90_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(50_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(135_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  pros::delay(1500);
-
-  intake.brake();
-  pros::delay(100);
-  intake.move(-127);
-
-  chassis.pid_drive_set(32_in, 30, true);
-  chassis.pid_wait();
-
-  pros::delay(500);
-
-  intake.move(127);
-
-  pros::delay(1500);
-
-  chassis.pid_drive_set(-8_in, 30);
-  chassis.pid_wait();
-
-  pros::delay(1500);
-
-  chassis.pid_turn_set(-90_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  pros::delay(500);
-
-  chassis.pid_drive_set(110_in, 100, true);
-  chassis.pid_wait_until(70_in);
-  chassis.pid_speed_max_set(60);
-  chassis.pid_wait();
-
-  pros::delay(1000);
-
-  intake.brake();
-  pros::delay(100);
-
-  chassis.pid_turn_set(45_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(-10_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-
-  clampPiston.set(false);
-  pros::delay(500);
-
-  chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
 }
 
 void safe_autos_red() {

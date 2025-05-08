@@ -1,5 +1,7 @@
 #include "main.h"
 
+#include "pros/adi.h"
+#include "pros/motors.h"
 #include "pros/rotation.hpp"
 #include "subsystems.hpp"
 
@@ -20,7 +22,7 @@ ez::Drive chassis(
     {-11, 12, -13, 14, -15},  // Left Chassis Ports (negative port will reverse it!)
     {16, -17, 18, -19, 20},   // Right Chassis Ports (negative port will reverse it!)
 
-    21,    // IMU Port
+    8,    // IMU Port
     2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
     600);  // Wheel RPM = cartridge * (motor gear / wheel gear)
 
@@ -74,11 +76,14 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Safe - Blue", safe_autos_blue},
-      {"Safe - Red", safe_autos_red},
+      {"Pos Rush - Blue", safe_autos_blue},
+      {"Neg Rush - Red", safe_autos_red},
   });
 
   lb_rotation.reset_position();
+  ladyBrown.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+  // pinMode('H',);
+
   // Initialize chassis and auton selector
   chassis.initialize();
   ez::as::initialize();
@@ -239,7 +244,7 @@ void ez_template_extras() {
       chassis.pid_tuner_toggle();
 
     // Trigger the selected autonomous routine
-    if (master.get_digital(DIGITAL_B) && master.get_digital(DIGITAL_DOWN)) {
+    if (master.get_digital(DIGITAL_A) && master.get_digital(DIGITAL_LEFT)) {
       pros::motor_brake_mode_e_t preference = chassis.drive_brake_get();
       autonomous();
       chassis.drive_brake_set(preference);
@@ -279,7 +284,14 @@ void opcontrol() {
   //   }
   // });
 
+  bool leftDoinkerDeployed = false;
+  bool flipperDeployed = false;
+
+  // pros::E_ADI_DIGITAL_IN 
+
   while (true) {
+
+
     // Gives you some extras to make EZ-Template ezier
     ez_template_extras();
 
@@ -306,7 +318,7 @@ void opcontrol() {
       intake.brake();
     }
 
-    if (master.get_digital(DIGITAL_L1)) {
+    if (master.get_digital(DIGITAL_L1) && lb_rotation.get_position() < 20000) {
       // liftControlTask.suspend();
       ladyBrown.move(127);
     } else if (master.get_digital(DIGITAL_L2)) {
@@ -318,13 +330,47 @@ void opcontrol() {
       // target = 0;
     }
 
+    //right doinker control
+    // if(master.get_digital(DIGITAL_RIGHT)){
+    //   leftDoinkerDeployed = true;
+    // }
+    // else{
+    //   leftDoinkerDeployed = false;
+    // }
+
+    // if(leftDoinkerDeployed){
+    //   leftDoinker.move(127);
+    // }
+    // else{
+    //   leftDoinker.move(0);
+    // }
+
+    if(master.get_digital(DIGITAL_DOWN)){
+      flipperDeployed = true;
+    }
+    else{
+      flipperDeployed = false;
+    }
+
+    if(leftDoinkerDeployed){
+      flipperPiston.move(127);
+    }
+    else{
+      flipperPiston.move(0);
+    }
+
+
     clampPiston.button_toggle(master.get_digital(DIGITAL_B));
 
-    rightDoinker.set(master.get_digital(DIGITAL_Y) && !flipperPiston.get());
+    rightDoinker.set(master.get_digital(DIGITAL_Y));
 
-    leftDoinker.set(master.get_digital(DIGITAL_RIGHT) && !flipperPiston.get());
 
-    flipperPiston.set(master.get_digital(DIGITAL_DOWN) && !rightDoinker.get() && !leftDoinker.get());
+    leftDoinker.set(master.get_digital(DIGITAL_RIGHT));
+
+    // flipperPiston.set(master.get_digital(DIGITAL_DOWN));
+
+    doinkerClaw.button_toggle(master.get_digital(DIGITAL_A));
+
 
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
