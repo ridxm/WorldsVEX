@@ -10,6 +10,9 @@ const int DRIVE_SPEED = 100;
 const int TURN_SPEED = 55;
 const int SWING_SPEED = 110;
 
+static int target = 0;
+
+
 ///
 // Constants
 ///
@@ -49,8 +52,32 @@ void default_constants() {
   chassis.drive_imu_scaler_set(1.001);
 }
 
+void liftControlAuto() {
+  double kp = 0.2;
+  double error = target - lb_rotation.get_position();
+  double velocity = kp * error;
+  pros::lcd::set_text(1, std::to_string(velocity));
+  pros::lcd::set_text(2, std::to_string(lb_rotation.get_position()));
+  pros::lcd::set_text(3, std::to_string(target));
+  ladyBrown.move(velocity);
+}
+
+
+
 void safe_autos_blue() {
+  pros::Task liftControlAutoTask(liftControlAuto);  // unjam function in helpers
+  liftControlAutoTask.resume();
+
   ladyBrown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  target = 100;
+  chassis.pid_turn_set(10_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(199000);
+
+
+  //START
+  
   chassis.drive_angle_set(-145_deg);
 
   chassis.pid_drive_set(-20_in, DRIVE_SPEED, true);

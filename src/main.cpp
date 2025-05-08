@@ -78,7 +78,7 @@ void initialize() {
       {"Safe - Red", safe_autos_red},
   });
 
-  lb_rotation.reset();
+  lb_rotation.reset_position();
   // Initialize chassis and auton selector
   chassis.initialize();
   ez::as::initialize();
@@ -101,7 +101,7 @@ void nextState() {
 }
 
 void liftControl() {
-  double kp = 1;
+  double kp = 0.05;
   double error = target - lb_rotation.get_position();
   double velocity = kp * error;
   pros::lcd::set_text(1, std::to_string(velocity));
@@ -293,10 +293,10 @@ void opcontrol() {
     // Put more user control code here!
     // . . .
 
-    if (master.get_digital_new_press(DIGITAL_X)) {
+    if (master.get_digital_new_press(DIGITAL_UP)) {
+      // liftControlTask.resume();
       nextState();
     }
-    pros::delay(20);
 
     if (master.get_digital(DIGITAL_R1)) {
       intake.move(127);
@@ -307,11 +307,15 @@ void opcontrol() {
     }
 
     if (master.get_digital(DIGITAL_L1)) {
+      // liftControlTask.suspend();
       ladyBrown.move(127);
     } else if (master.get_digital(DIGITAL_L2)) {
+      // liftControlTask.suspend();
       ladyBrown.move(-127);
     } else {
       ladyBrown.brake();
+      // liftControlTask.resume();
+      // target = 0;
     }
 
     clampPiston.button_toggle(master.get_digital(DIGITAL_B));
