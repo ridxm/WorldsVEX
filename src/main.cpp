@@ -60,6 +60,7 @@ void initialize() {
   });
 
   lb_rotation.reset_position();
+
   // Initialize chassis and auton selector
   chassis.initialize();
   ez::as::initialize();
@@ -264,7 +265,6 @@ void opcontrol() {
   liftControlTask.suspend();
 
   while (true) {
-    pros::lcd::set_text(3, std::to_string(lb_rotation.get_position()));
 
     // Gives you some extras to make EZ-Template ezier
     ez_template_extras();

@@ -20,3 +20,5 @@ inline ez::Piston doinkerClaw('B', false);
 
 // inline pros::Motor Doinker('A');
 inline pros::Motor flipperPiston('E');
+
+inline pros::adi::DigitalIn sensor ('H');
