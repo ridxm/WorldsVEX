@@ -251,8 +251,10 @@ void ez_template_extras() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+
   // This is preference to what you like to drive on
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
+  ladyBrown.get_brake_mode(MOTOR_BRAKE_HOLD);
   pros::Task liftControlTask([] {
     while (true) {
       liftControl();
@@ -262,6 +264,8 @@ void opcontrol() {
   liftControlTask.suspend();
 
   while (true) {
+    pros::lcd::set_text(3, std::to_string(lb_rotation.get_position()));
+
     // Gives you some extras to make EZ-Template ezier
     ez_template_extras();
 
@@ -275,31 +279,43 @@ void opcontrol() {
     // Put more user control code here!
     // . . .
 
-    if (master.get_digital_new_press(DIGITAL_UP)) {
+    //lift control 
+    if (master.get_digital_new_press(DIGITAL_R1)) {
       liftControlTask.resume();
-      pros::delay(300);
-      target = 1000;
-      // liftControlTask.suspend();
+      pros::delay(100);
+      target = 1400;
     }
 
-    if (master.get_digital(DIGITAL_R1)) {
+    if (master.get_digital_new_press(DIGITAL_L1)) {
+      liftControlTask.resume();
+      pros::delay(100);
+      target = 100;
+    }
+
+
+    //intake stuff
+    if (master.get_digital(DIGITAL_R1) || master.get_digital(DIGITAL_L1)){
       intake.move(127);
-    } else if (master.get_digital(DIGITAL_R2)) {
+    } 
+    else if (master.get_digital(DIGITAL_R2)) {
+      liftControlTask.suspend();
       intake.move(-127);
-    } else {
+    } 
+    else {
       intake.brake();
     }
 
-    if (master.get_digital(DIGITAL_L1)) {
+    //lb movements
+    if (master.get_digital(DIGITAL_L2) && lb_rotation.get_position() < 8000) {
       liftControlTask.suspend();
       ladyBrown.move(127);
-    } else if (master.get_digital(DIGITAL_L2)) {
+    } 
+    else if (master.get_digital(DIGITAL_R2)) {
       liftControlTask.suspend();
       ladyBrown.move(-127);
-    } else {
+    }
+    else {
       ladyBrown.brake();
-      // liftControlTask.resume();
-      // target = 0;
     }
 
     clampPiston.button_toggle(master.get_digital(DIGITAL_B));
