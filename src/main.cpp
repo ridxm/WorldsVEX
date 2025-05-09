@@ -274,9 +274,34 @@ void ez_template_extras() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+
+//  void lbMove(int target, int timeout) {
+//   int position = lb_rotation.get_position();
+//   int target_position = target;
+//   int pressTime = pros::millis();
+
+//   while (abs(position) < target_position) {
+//     pros::lcd::print(1, "Rotation: %i", position);
+
+//     int curTime = pros::millis();
+//     position = lb_rotation.get_position();
+//     ladyBrown.move(80);  // 55
+//     pros::delay(20);
+
+//     // if (curTime - pressTime > timeout) break;
+//   }
+//   while(abs(position) > target_position){
+//     position = lb_rotation.get_position();
+//     ladyBrown.move(-80);  // 55
+//     pros::delay(20);
+//   }
+// }
+
 void opcontrol() {
   // This is preference to what you like to drive on
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
+  ladyBrown.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+
   // pros::Task liftControlTask([] {
   //   while (true) {
   //     liftControl();
@@ -312,13 +337,15 @@ void opcontrol() {
 
     if (master.get_digital(DIGITAL_R1)) {
       intake.move(127);
+      // lbMove(2000, 2000);
     } else if (master.get_digital(DIGITAL_R2)) {
       intake.move(-127);
+      ladyBrown.move(-127);
     } else {
       intake.brake();
     }
 
-    if (master.get_digital(DIGITAL_L1) && lb_rotation.get_position() < 20000) {
+    if (master.get_digital(DIGITAL_L1) && lb_rotation.get_position() < 13000) {
       // liftControlTask.suspend();
       ladyBrown.move(127);
     } else if (master.get_digital(DIGITAL_L2)) {

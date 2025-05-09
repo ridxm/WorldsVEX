@@ -110,12 +110,54 @@ ez::Piston doinkerClaw('B', false);
   chassis.pid_turn_set(185_deg, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-8_in, 40, true);
+  pros::delay(500);
+
+  chassis.pid_drive_set(-13_in, 40, true);
   chassis.pid_wait();
 
+  pros::delay(300);
+
   clampPiston.set(true);
+  
+  chassis.pid_turn_relative_set(-35_deg, TURN_SPEED);
+  chassis.pid_wait();
 
+  //FIX
+  ladyBrown.move(80);
+  pros::delay(50);
+  ladyBrown.brake();
 
+  intake.move(127);
+
+  chassis.pid_drive_set(24_in, 50, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(-135_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  intake.move(-127);
+
+  chassis.pid_drive_set(32_in, 55, true);
+  chassis.pid_wait();
+
+  pros::delay(500);
+
+  intake.move(127);
+
+  pros::delay(1500);
+
+  chassis.pid_drive_set(-8_in, 30);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(45_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(50_in, 30);
+  chassis.pid_wait();
+
+  ladyBrown.move(80);
+  pros::delay(200);
+  ladyBrown.brake();
 
 
 }
