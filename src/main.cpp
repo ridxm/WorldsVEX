@@ -8,11 +8,6 @@
 // https://ez-robotics.github.io/EZ-Template/
 /////
 
-// const int numStates = 3;
-// // make sure these are in centidegrees (1 degree = 100 centidegrees)
-// int states[numStates] = {0, 300, 2000};
-// int currState = 0;
-// int target = 0;
 
 // Chassis constructor
 ez::Drive chassis(
@@ -39,20 +34,6 @@ ez::Drive chassis(
  * to keep execution time for this mode under a few seconds.
  */
 
-// void nextState() {
-//   currState += 1;
-//   if (currState == numStates) {
-//     currState = 0;
-//   }
-//   target = states[currState];
-// }
-
-// void liftControl() {
-//   double kp = 0.5;
-//   double error = target - lb_rotation.get_position();
-//   double velocity = kp * error;
-//   ladyBrown.move(velocity);
-// }
 
 void initialize() {
   // Print our branding over your terminal :D
@@ -101,7 +82,7 @@ void nextState() {
 }
 
 void liftControl() {
-  double kp = 0.05;
+  double kp = 0.03;
   double error = target - lb_rotation.get_position();
   double velocity = kp * error;
   pros::lcd::set_text(1, std::to_string(velocity));
@@ -272,12 +253,13 @@ void ez_template_extras() {
 void opcontrol() {
   // This is preference to what you like to drive on
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
-  // pros::Task liftControlTask([] {
-  //   while (true) {
-  //     liftControl();
-  //     pros::delay(10);
-  //   }
-  // });
+  pros::Task liftControlTask([] {
+    while (true) {
+      liftControl();
+      pros::delay(10);
+    }
+  });
+  liftControlTask.suspend();
 
   while (true) {
     // Gives you some extras to make EZ-Template ezier
@@ -294,8 +276,10 @@ void opcontrol() {
     // . . .
 
     if (master.get_digital_new_press(DIGITAL_UP)) {
-      // liftControlTask.resume();
-      nextState();
+      liftControlTask.resume();
+      pros::delay(300);
+      target = 1000;
+      // liftControlTask.suspend();
     }
 
     if (master.get_digital(DIGITAL_R1)) {
@@ -307,10 +291,10 @@ void opcontrol() {
     }
 
     if (master.get_digital(DIGITAL_L1)) {
-      // liftControlTask.suspend();
+      liftControlTask.suspend();
       ladyBrown.move(127);
     } else if (master.get_digital(DIGITAL_L2)) {
-      // liftControlTask.suspend();
+      liftControlTask.suspend();
       ladyBrown.move(-127);
     } else {
       ladyBrown.brake();
