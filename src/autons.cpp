@@ -67,9 +67,15 @@ void liftControlAuto() {
 
 void safe_autos_blue() {
 
+  ladyBrown.move(80);
+  pros::delay(500);
+  ladyBrown.brake();
+
+  pros::delay(10000);
+
   chassis.drive_angle_set(27_deg);
 
-//   pros::delay(1000);
+
   
 // chassis.pid_turn_set(-90_deg, TURN_SPEED);
 // chassis.pid_wait();
@@ -109,6 +115,10 @@ ez::Piston doinkerClaw('B', false);
 
   chassis.pid_turn_set(185_deg, TURN_SPEED);
   chassis.pid_wait();
+
+  ladyBrown.move(100);
+  pros::delay(100);
+  ladyBrown.move(0);
 
   pros::delay(500);
 
@@ -156,101 +166,108 @@ ez::Piston doinkerClaw('B', false);
   chassis.pid_wait();
 
   ladyBrown.move(80);
-  pros::delay(200);
+  pros::delay(500);
   ladyBrown.brake();
 
 
 }
 
 void safe_autos_red() {
-  ladyBrown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  chassis.drive_angle_set(145_deg);
+  chassis.drive_angle_set(27_deg);
 
-  chassis.pid_drive_set(-20_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
 
-  chassis.pid_turn_set(-90_deg, TURN_SPEED);
-  chassis.pid_wait();
+  
+  // chassis.pid_turn_set(-90_deg, TURN_SPEED);
+  // chassis.pid_wait();
+  
+  // pros::delay(5000);
+  
+    ez::Piston leftDoinker('A', false);
+  ez::Piston doinkerClaw('B', false);
+  
+    // leftDoinker.set(true);
+    // pros::delay(1000);
+    // leftDoinker.set(false);
+    // pros::delay(1000);
+    chassis.pid_drive_set(21_in, 127);
+    chassis.pid_wait_until(4_in);
+    leftDoinker.set(true);
+    doinkerClaw.set(true);
+    pros::delay(350);
+    doinkerClaw.set(false);
+    pros::delay(50);
+    leftDoinker.set(false);
+    chassis.pid_wait();
+    
+  
+    chassis.pid_drive_set(-15_in, 127, true);
+    chassis.pid_wait();
+  
+    leftDoinker.set(true);
+    pros::delay(100);
+    doinkerClaw.set(true);
+  
+  
+    chassis.pid_drive_set(-8_in, 80, true);
+    chassis.pid_wait();
+  
+    leftDoinker.set(false);
+  
+    chassis.pid_turn_set(-185_deg, TURN_SPEED);
+    chassis.pid_wait();
+  
+    ladyBrown.move(100);
+    pros::delay(100);
+    ladyBrown.move(0);
+  
+    pros::delay(500);
+  
+    chassis.pid_drive_set(-13_in, 40, true);
+    chassis.pid_wait();
+  
+    pros::delay(300);
+  
+    clampPiston.set(true);
+    
+    chassis.pid_turn_relative_set(35_deg, TURN_SPEED);
+    chassis.pid_wait();
+  
+    //FIX
+    ladyBrown.move(80);
+    pros::delay(50);
+    ladyBrown.brake();
+  
+    intake.move(127);
+  
+    chassis.pid_drive_set(24_in, 50, true);
+    chassis.pid_wait();
+  
+    chassis.pid_turn_set(135_deg, TURN_SPEED);
+    chassis.pid_wait();
+  
+    intake.move(-127);
+  
+    chassis.pid_drive_set(32_in, 55, true);
+    chassis.pid_wait();
+  
+    pros::delay(500);
+  
+    intake.move(127);
+  
+    pros::delay(1500);
+  
+    chassis.pid_drive_set(-8_in, 30);
+    chassis.pid_wait();
+  
+    chassis.pid_turn_set(-45_deg, TURN_SPEED);
+    chassis.pid_wait();
+  
+    chassis.pid_drive_set(50_in, 30);
+    chassis.pid_wait();
 
-  chassis.pid_drive_set(-30_in, 50, true);
-  chassis.pid_wait();
-
-  clampPiston.set(true);
-  pros::delay(500);
-
-  chassis.pid_turn_set(-85_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(-180_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  intake.move(127);
-  pros::delay(1000);
-
-  chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-
-  pros::delay(500);
-
-  chassis.pid_drive_set(-7_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(-90_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(50_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(-135_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  pros::delay(1500);
-
-  intake.brake();
-  pros::delay(100);
-  intake.move(-127);
-
-  chassis.pid_drive_set(32_in, 55, true);
-  chassis.pid_wait();
-
-  pros::delay(500);
-
-  intake.move(127);
-
-  pros::delay(1500);
-
-  chassis.pid_drive_set(-8_in, 30);
-  chassis.pid_wait();
-
-  pros::delay(3000);
-
-  chassis.pid_turn_set(90_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  pros::delay(500);
-
-  chassis.pid_drive_set(110_in, 60, true);
-  chassis.pid_wait();
-
-  pros::delay(1500);
-
-  intake.brake();
-  pros::delay(100);
-
-  chassis.pid_turn_set(-45_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(-10_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-
-  clampPiston.set(false);
-  pros::delay(500);
-
-  chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
+    ladyBrown.move(80);
+    pros::delay(500);
+    ladyBrown.brake();
 }
 
 ///
