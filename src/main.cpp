@@ -1,7 +1,5 @@
 #include "main.h"
 
-#include "pros/adi.h"
-#include "pros/motors.h"
 #include "pros/rotation.hpp"
 #include "subsystems.hpp"
 
@@ -10,11 +8,6 @@
 // https://ez-robotics.github.io/EZ-Template/
 /////
 
-// const int numStates = 3;
-// // make sure these are in centidegrees (1 degree = 100 centidegrees)
-// int states[numStates] = {0, 300, 2000};
-// int currState = 0;
-// int target = 0;
 
 // Chassis constructor
 ez::Drive chassis(
@@ -41,20 +34,6 @@ ez::Drive chassis(
  * to keep execution time for this mode under a few seconds.
  */
 
-// void nextState() {
-//   currState += 1;
-//   if (currState == numStates) {
-//     currState = 0;
-//   }
-//   target = states[currState];
-// }
-
-// void liftControl() {
-//   double kp = 0.5;
-//   double error = target - lb_rotation.get_position();
-//   double velocity = kp * error;
-//   ladyBrown.move(velocity);
-// }
 
 void initialize() {
   // Print our branding over your terminal :D
@@ -76,14 +55,11 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Pos Rush - Blue", safe_autos_blue},
-      {"Neg Rush - Red", safe_autos_red},
+      {"Safe - Blue", safe_autos_blue},
+      {"Safe - Red", safe_autos_red},
   });
 
   lb_rotation.reset_position();
-  ladyBrown.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-  // pinMode('H',);
-
   // Initialize chassis and auton selector
   chassis.initialize();
   ez::as::initialize();
@@ -106,7 +82,7 @@ void nextState() {
 }
 
 void liftControl() {
-  double kp = 0.05;
+  double kp = 0.03;
   double error = target - lb_rotation.get_position();
   double velocity = kp * error;
   pros::lcd::set_text(1, std::to_string(velocity));
@@ -244,7 +220,7 @@ void ez_template_extras() {
       chassis.pid_tuner_toggle();
 
     // Trigger the selected autonomous routine
-    if (master.get_digital(DIGITAL_A) && master.get_digital(DIGITAL_LEFT)) {
+    if (master.get_digital(DIGITAL_B) && master.get_digital(DIGITAL_DOWN)) {
       pros::motor_brake_mode_e_t preference = chassis.drive_brake_get();
       autonomous();
       chassis.drive_brake_set(preference);
@@ -274,48 +250,21 @@ void ez_template_extras() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-
-//  void lbMove(int target, int timeout) {
-//   int position = lb_rotation.get_position();
-//   int target_position = target;
-//   int pressTime = pros::millis();
-
-//   while (abs(position) < target_position) {
-//     pros::lcd::print(1, "Rotation: %i", position);
-
-//     int curTime = pros::millis();
-//     position = lb_rotation.get_position();
-//     ladyBrown.move(80);  // 55
-//     pros::delay(20);
-
-//     // if (curTime - pressTime > timeout) break;
-//   }
-//   while(abs(position) > target_position){
-//     position = lb_rotation.get_position();
-//     ladyBrown.move(-80);  // 55
-//     pros::delay(20);
-//   }
-// }
-
 void opcontrol() {
+
   // This is preference to what you like to drive on
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
-  ladyBrown.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-
-  // pros::Task liftControlTask([] {
-  //   while (true) {
-  //     liftControl();
-  //     pros::delay(10);
-  //   }
-  // });
-
-  bool leftDoinkerDeployed = false;
-  bool flipperDeployed = false;
-
-  // pros::E_ADI_DIGITAL_IN 
+  ladyBrown.get_brake_mode(MOTOR_BRAKE_HOLD);
+  pros::Task liftControlTask([] {
+    while (true) {
+      liftControl();
+      pros::delay(10);
+    }
+  });
+  liftControlTask.suspend();
 
   while (true) {
-
+    pros::lcd::set_text(3, std::to_string(lb_rotation.get_position()));
 
     // Gives you some extras to make EZ-Template ezier
     ez_template_extras();
@@ -330,74 +279,52 @@ void opcontrol() {
     // Put more user control code here!
     // . . .
 
-    if (master.get_digital_new_press(DIGITAL_UP)) {
-      // liftControlTask.resume();
-      nextState();
+    //lift control 
+    if (master.get_digital_new_press(DIGITAL_R1)) {
+      liftControlTask.resume();
+      pros::delay(100);
+      target = 1600;
     }
 
-    if (master.get_digital(DIGITAL_R1)) {
+    if (master.get_digital_new_press(DIGITAL_L1)) {
+      liftControlTask.resume();
+      pros::delay(100);
+      target = 100;
+    }
+
+
+    //intake stuff
+    if (master.get_digital(DIGITAL_R1) || master.get_digital(DIGITAL_L1)){
       intake.move(127);
-      // lbMove(2000, 2000);
-    } else if (master.get_digital(DIGITAL_R2)) {
+    } 
+    else if (master.get_digital(DIGITAL_R2)) {
+      liftControlTask.suspend();
       intake.move(-127);
-      ladyBrown.move(-127);
-    } else {
+    } 
+    else {
       intake.brake();
     }
 
-    if (master.get_digital(DIGITAL_L1) && lb_rotation.get_position() < 13000) {
-      // liftControlTask.suspend();
+    //lb movements
+    if (master.get_digital(DIGITAL_L2) && lb_rotation.get_position() < 8000) {
+      liftControlTask.suspend();
       ladyBrown.move(127);
-    } else if (master.get_digital(DIGITAL_L2)) {
-      // liftControlTask.suspend();
+    } 
+    else if (master.get_digital(DIGITAL_R2)) {
+      liftControlTask.suspend();
       ladyBrown.move(-127);
-    } else {
+    }
+    else {
       ladyBrown.brake();
-      // liftControlTask.resume();
-      // target = 0;
     }
-
-    //right doinker control
-    // if(master.get_digital(DIGITAL_RIGHT)){
-    //   leftDoinkerDeployed = true;
-    // }
-    // else{
-    //   leftDoinkerDeployed = false;
-    // }
-
-    // if(leftDoinkerDeployed){
-    //   leftDoinker.move(127);
-    // }
-    // else{
-    //   leftDoinker.move(0);
-    // }
-
-    if(master.get_digital(DIGITAL_DOWN)){
-      flipperDeployed = true;
-    }
-    else{
-      flipperDeployed = false;
-    }
-
-    if(leftDoinkerDeployed){
-      flipperPiston.move(127);
-    }
-    else{
-      flipperPiston.move(0);
-    }
-
 
     clampPiston.button_toggle(master.get_digital(DIGITAL_B));
 
-    rightDoinker.set(master.get_digital(DIGITAL_Y));
+    // rightDoinker.set(master.get_digital(DIGITAL_Y) && !flipperPiston.get());
 
+    // leftDoinker.set(master.get_digital(DIGITAL_RIGHT) && !flipperPiston.get());
 
-    leftDoinker.set(master.get_digital(DIGITAL_RIGHT));
-
-    // flipperPiston.set(master.get_digital(DIGITAL_DOWN));
-
-    doinkerClaw.button_toggle(master.get_digital(DIGITAL_A));
-
+    // flipperPiston.set(master.get_digital(DIGITAL_DOWN) && !rightDoinker.get() && !leftDoinker.get());
 
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
