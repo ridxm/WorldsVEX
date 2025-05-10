@@ -1,5 +1,6 @@
 #include "main.h"
 
+#include "autons.hpp"
 #include "pros/rotation.hpp"
 #include "subsystems.hpp"
 
@@ -55,8 +56,9 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Safe - Blue", safe_autos_blue},
-      {"Safe - Red", safe_autos_red},
+      {"RUSH - Blue", safe_autos_blue},
+      {"RUSH - Red", safe_autos_red},
+      {"JUST MOVE FORWARD", just_move_forward},
   });
 
   lb_rotation.reset_position();
@@ -221,7 +223,7 @@ void ez_template_extras() {
       chassis.pid_tuner_toggle();
 
     // Trigger the selected autonomous routine
-    if (master.get_digital(DIGITAL_B) && master.get_digital(DIGITAL_DOWN)) {
+    if (master.get_digital(DIGITAL_A) && master.get_digital(DIGITAL_LEFT)) {
       pros::motor_brake_mode_e_t preference = chassis.drive_brake_get();
       autonomous();
       chassis.drive_brake_set(preference);
@@ -306,7 +308,7 @@ void opcontrol() {
     }
 
     //lb movements
-    if (master.get_digital(DIGITAL_L2) && lb_rotation.get_position() < 8000) {
+    if (master.get_digital(DIGITAL_L2) && lb_rotation.get_position() < 13000) {
       liftControlTask.suspend();
       ladyBrown.move(127);
     } 
@@ -320,9 +322,9 @@ void opcontrol() {
 
     clampPiston.button_toggle(master.get_digital(DIGITAL_B));
 
-    // rightDoinker.set(master.get_digital(DIGITAL_Y) && !flipperPiston.get());
+    rightDoinker.set(master.get_digital(DIGITAL_Y));
 
-    // leftDoinker.set(master.get_digital(DIGITAL_RIGHT) && !flipperPiston.get());
+    leftDoinker.set(master.get_digital(DIGITAL_RIGHT));
 
     // flipperPiston.set(master.get_digital(DIGITAL_DOWN) && !rightDoinker.get() && !leftDoinker.get());
 

@@ -1,3 +1,4 @@
+#include "autons.hpp"
 #include "main.h"
 #include "subsystems.hpp"
 
@@ -66,16 +67,7 @@ void liftControlAuto() {
 
 
 void safe_autos_blue() {
-
-  ladyBrown.move(80);
-  pros::delay(500);
-  ladyBrown.brake();
-
-  pros::delay(10000);
-
   chassis.drive_angle_set(27_deg);
-
-
   
 // chassis.pid_turn_set(-90_deg, TURN_SPEED);
 // chassis.pid_wait();
@@ -174,8 +166,6 @@ ez::Piston doinkerClaw('B', false);
 
 void safe_autos_red() {
   chassis.drive_angle_set(27_deg);
-
-
   
   // chassis.pid_turn_set(-90_deg, TURN_SPEED);
   // chassis.pid_wait();
@@ -193,7 +183,7 @@ void safe_autos_red() {
     chassis.pid_wait_until(4_in);
     leftDoinker.set(true);
     doinkerClaw.set(true);
-    pros::delay(350);
+    pros::delay(400);
     doinkerClaw.set(false);
     pros::delay(50);
     leftDoinker.set(false);
@@ -222,14 +212,14 @@ void safe_autos_red() {
   
     pros::delay(500);
   
-    chassis.pid_drive_set(-13_in, 40, true);
+    chassis.pid_drive_set(-18_in, 40, true);
     chassis.pid_wait();
   
     pros::delay(300);
   
     clampPiston.set(true);
     
-    chassis.pid_turn_relative_set(35_deg, TURN_SPEED);
+    chassis.pid_turn_relative_set(30_deg, TURN_SPEED);
     chassis.pid_wait();
   
     //FIX
@@ -270,6 +260,11 @@ void safe_autos_red() {
     ladyBrown.brake();
 }
 
+
+void just_move_forward(){
+    chassis.pid_drive_set(24_in, 30);
+    chassis.pid_wait();
+}
 ///
 // Interference example
 ///
