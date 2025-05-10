@@ -13,5 +13,7 @@ inline pros::Optical color(7);
 
 inline ez::Piston clampPiston('A', false);
 inline ez::Piston flipperPiston('G', false);
-inline ez::Piston rightDoinker('H', false);
+inline ez::Piston rightDoinker('C', false);
 inline ez::Piston leftDoinker('D', false);
+
+inline pros::ADIMotor solenoidController('H');

@@ -6,12 +6,11 @@
 /////
 
 // These are out of 127
-const int DRIVE_SPEED = 100;
+const int DRIVE_SPEED = 120;
 const int TURN_SPEED = 55;
 const int SWING_SPEED = 110;
 
 static int target = 0;
-
 
 ///
 // Constants
@@ -62,23 +61,28 @@ void liftControlAuto() {
   ladyBrown.move(velocity);
 }
 
-
-
 void safe_autos_blue() {
-  pros::Task liftControlAutoTask(liftControlAuto);  // unjam function in helpers
-  liftControlAutoTask.resume();
+  // pros::Task liftControlAutoTask(liftControlAuto);  // unjam function in helpers
+  // liftControlAutoTask.resume();
 
   ladyBrown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  target = 100;
-  chassis.pid_turn_set(10_deg, TURN_SPEED);
-  chassis.pid_wait();
+  // target = 100;
+  // chassis.pid_turn_set(10_deg, TURN_SPEED);
+  // chassis.pid_wait();
 
-  pros::delay(199000);
+  // START
 
-
-  //START
-  
   chassis.drive_angle_set(-145_deg);
+
+  ladyBrown.move(127);
+  pros::delay(300);
+  ladyBrown.brake();
+
+  pros::delay(500);
+
+  ladyBrown.move(-60);
+  pros::delay(450);
+  ladyBrown.brake();
 
   chassis.pid_drive_set(-20_in, DRIVE_SPEED, true);
   chassis.pid_wait();
@@ -86,7 +90,7 @@ void safe_autos_blue() {
   chassis.pid_turn_set(90_deg, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-30_in, 50, true);
+  chassis.pid_drive_set(-30_in, 60, true);
   chassis.pid_wait();
 
   clampPiston.set(true);
@@ -127,7 +131,7 @@ void safe_autos_blue() {
   pros::delay(100);
   intake.move(-127);
 
-  chassis.pid_drive_set(32_in, 30, true);
+  chassis.pid_drive_set(32_in, 40, true);
   chassis.pid_wait();
 
   pros::delay(500);
@@ -136,7 +140,7 @@ void safe_autos_blue() {
 
   pros::delay(1500);
 
-  chassis.pid_drive_set(-8_in, 30);
+  chassis.pid_drive_set(-8_in, 40);
   chassis.pid_wait();
 
   pros::delay(1500);
@@ -179,7 +183,7 @@ void safe_autos_red() {
   chassis.pid_turn_set(-90_deg, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-30_in, 50, true);
+  chassis.pid_drive_set(-30_in, 60, true);
   chassis.pid_wait();
 
   clampPiston.set(true);
@@ -229,7 +233,7 @@ void safe_autos_red() {
 
   pros::delay(1500);
 
-  chassis.pid_drive_set(-8_in, 30);
+  chassis.pid_drive_set(-8_in, 40);
   chassis.pid_wait();
 
   pros::delay(3000);
@@ -239,7 +243,7 @@ void safe_autos_red() {
 
   pros::delay(500);
 
-  chassis.pid_drive_set(110_in, 60, true);
+  chassis.pid_drive_set(110_in, 70, true);
   chassis.pid_wait();
 
   pros::delay(1500);

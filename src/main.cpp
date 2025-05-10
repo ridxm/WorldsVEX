@@ -8,6 +8,7 @@
 // https://ez-robotics.github.io/EZ-Template/
 /////
 
+bool solenoidExtended = false;
 
 // Chassis constructor
 ez::Drive chassis(
@@ -33,7 +34,6 @@ ez::Drive chassis(
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-
 
 void initialize() {
   // Print our branding over your terminal :D
@@ -251,7 +251,6 @@ void ez_template_extras() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-
   // This is preference to what you like to drive on
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
   ladyBrown.get_brake_mode(MOTOR_BRAKE_HOLD);
@@ -279,52 +278,68 @@ void opcontrol() {
     // Put more user control code here!
     // . . .
 
-    //lift control 
+    // lift control
     if (master.get_digital_new_press(DIGITAL_R1)) {
       liftControlTask.resume();
       pros::delay(100);
-      target = 1400;
+      target = 1600;
     }
 
-    if (master.get_digital_new_press(DIGITAL_L1)) {
-      liftControlTask.resume();
-      pros::delay(100);
-      target = 100;
-    }
+    // if (master.get_digital_new_press(DIGITAL_L1)) {
+    //   liftControlTask.resume();
+    //   pros::delay(100);
+    //   target = 100;
+    // }
 
-
-    //intake stuff
-    if (master.get_digital(DIGITAL_R1) || master.get_digital(DIGITAL_L1)){
+    // intake stuff
+    if (master.get_digital(DIGITAL_R1)) {
       intake.move(127);
-    } 
-    else if (master.get_digital(DIGITAL_R2)) {
+    } else if (master.get_digital(DIGITAL_R2)) {
       liftControlTask.suspend();
       intake.move(-127);
-    } 
-    else {
+    } else {
       intake.brake();
     }
 
-    //lb movements
-    if (master.get_digital(DIGITAL_L2) && lb_rotation.get_position() < 8000) {
+    // lb movements
+    // if (master.get_digital(DIGITAL_L2) && lb_rotation.get_position() < 8000) {
+    //   liftControlTask.suspend();
+    //   ladyBrown.move(127);
+    // } else if (master.get_digital(DIGITAL_R2)) {
+    //   liftControlTask.suspend();
+    //   ladyBrown.move(-127);
+    // } else {
+    //   ladyBrown.brake();
+    // }
+
+    if (master.get_digital(DIGITAL_L1) && lb_rotation.get_position() < 13000) {
       liftControlTask.suspend();
       ladyBrown.move(127);
-    } 
-    else if (master.get_digital(DIGITAL_R2)) {
+    } else if (master.get_digital(DIGITAL_L2)) {
       liftControlTask.suspend();
       ladyBrown.move(-127);
-    }
-    else {
+
+    } else {
+      liftControlTask.suspend();
       ladyBrown.brake();
     }
 
+    if (master.get_digital_new_press(DIGITAL_UP)) {
+      solenoidExtended = !solenoidExtended;
+      solenoidController.set_value(solenoidExtended ? 127 : 0);
+    }
+
+    // if (master.get_digital_new_press(DIGITAL_DOWN)) {
+    //   solenoidController.set_value(0);
+    // }
+
     clampPiston.button_toggle(master.get_digital(DIGITAL_B));
 
-    rightDoinker.set(master.get_digital(DIGITAL_Y) && !flipperPiston.get());
+    rightDoinker.set(master.get_digital(DIGITAL_Y));
 
-    leftDoinker.set(master.get_digital(DIGITAL_RIGHT) && !flipperPiston.get());
+    leftDoinker.set(master.get_digital(DIGITAL_RIGHT));
 
-    flipperPiston.set(master.get_digital(DIGITAL_DOWN) && !rightDoinker.get() && !leftDoinker.get());
+    flipperPiston.set(master.get_digital(DIGITAL_DOWN));
 
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
