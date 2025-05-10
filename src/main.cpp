@@ -1,6 +1,7 @@
 #include "main.h"
 
 #include "autons.hpp"
+#include "pros/motors.h"
 #include "pros/rotation.hpp"
 #include "subsystems.hpp"
 
@@ -44,7 +45,7 @@ void initialize() {
 
   // Configure your chassis controls
   chassis.opcontrol_curve_buttons_toggle(false);  // Enables modifying the controller curve with buttons on the joysticks
-  // chassis.opcontrol_drive_activebrake_set(0.0);   // Sets the active brake kP. We recommend ~2.  0 will disable.
+  chassis.opcontrol_drive_activebrake_set(1.0);   // Sets the active brake kP. We recommend ~2.  0 will disable.
   // chassis.opcontrol_curve_default_set(0.0, 0.0);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
   // Set the drive to your own constants from autons.cpp!
@@ -56,7 +57,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"RUSH - Blue", safe_autos_blue},
+      // {"RUSH - Blue", safe_autos_blue},
       {"RUSH - Red", safe_autos_red},
       {"JUST MOVE FORWARD", just_move_forward},
   });
@@ -132,7 +133,7 @@ void autonomous() {
   chassis.drive_imu_reset();                  // Reset gyro position to 0
   chassis.drive_sensor_reset();               // Reset drive sensors to 0
   chassis.odom_xyt_set(0_in, 0_in, 0_deg);    // Set the current position, you can start at a specific position with this
-  chassis.drive_brake_set(MOTOR_BRAKE_HOLD);  // Set motors to hold.  This helps autonomous consistency
+  chassis.drive_brake_set(pros::E_MOTOR_BRAKE_BRAKE);  // Set motors to hold.  This helps autonomous consistency
 
   /*
   Odometry and Pure Pursuit are not magic
@@ -285,13 +286,13 @@ void opcontrol() {
     if (master.get_digital_new_press(DIGITAL_R1)) {
       liftControlTask.resume();
       pros::delay(100);
-      target = 1600;
+      target = 1800;
     }
 
     if (master.get_digital_new_press(DIGITAL_L1)) {
       liftControlTask.resume();
       pros::delay(100);
-      target = 100;
+      target = -30;
     }
 
 

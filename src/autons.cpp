@@ -165,14 +165,14 @@ ez::Piston doinkerClaw('B', false);
 }
 
 void safe_autos_red() {
-  chassis.drive_angle_set(27_deg);
+  chassis.drive_angle_set(-27_deg);
   
   // chassis.pid_turn_set(-90_deg, TURN_SPEED);
   // chassis.pid_wait();
   
   // pros::delay(5000);
   
-    ez::Piston leftDoinker('A', false);
+    ez::Piston leftDoinker('D', false);
   ez::Piston doinkerClaw('B', false);
   
     // leftDoinker.set(true);
@@ -198,10 +198,15 @@ void safe_autos_red() {
     doinkerClaw.set(true);
   
   
-    chassis.pid_drive_set(-8_in, 80, true);
+    chassis.pid_drive_set(-8_in, 40, true);
     chassis.pid_wait();
+
+    pros::delay(500);
   
     leftDoinker.set(false);
+
+    pros::delay(500);
+
   
     chassis.pid_turn_set(-185_deg, TURN_SPEED);
     chassis.pid_wait();
@@ -212,7 +217,7 @@ void safe_autos_red() {
   
     pros::delay(500);
   
-    chassis.pid_drive_set(-18_in, 40, true);
+    chassis.pid_drive_set(-24_in, 40, true);
     chassis.pid_wait();
   
     pros::delay(300);
@@ -252,12 +257,9 @@ void safe_autos_red() {
     chassis.pid_turn_set(-45_deg, TURN_SPEED);
     chassis.pid_wait();
   
-    chassis.pid_drive_set(50_in, 30);
+    chassis.pid_drive_set(24_in, 30);
     chassis.pid_wait();
 
-    ladyBrown.move(80);
-    pros::delay(500);
-    ladyBrown.brake();
 }
 
 
