@@ -105,7 +105,7 @@ void safe_autos_blue() {
   chassis.pid_turn_set(180_deg, TURN_SPEED);
   chassis.pid_wait();
 
-  intake.move(127);
+  intake.move(105);
   pros::delay(1000);
 
   chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
@@ -136,7 +136,7 @@ void safe_autos_blue() {
 
   pros::delay(500);
 
-  intake.move(127);
+  intake.move(105);
 
   pros::delay(1500);
 
@@ -175,7 +175,12 @@ void safe_autos_blue() {
 
 void safe_autos_red() {
   ladyBrown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
   chassis.drive_angle_set(145_deg);
+
+  ladyBrown.move(127);
+  pros::delay(300);
+  ladyBrown.brake();
 
   chassis.pid_drive_set(-20_in, DRIVE_SPEED, true);
   chassis.pid_wait();
@@ -198,7 +203,7 @@ void safe_autos_red() {
   chassis.pid_turn_set(-180_deg, TURN_SPEED);
   chassis.pid_wait();
 
-  intake.move(127);
+  intake.move(105);
   pros::delay(1000);
 
   chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
@@ -229,7 +234,7 @@ void safe_autos_red() {
 
   pros::delay(500);
 
-  intake.move(127);
+  intake.move(105);
 
   pros::delay(1500);
 

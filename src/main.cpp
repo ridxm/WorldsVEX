@@ -279,11 +279,11 @@ void opcontrol() {
     // . . .
 
     // lift control
-    if (master.get_digital_new_press(DIGITAL_R1)) {
-      liftControlTask.resume();
-      pros::delay(100);
-      target = 1600;
-    }
+    // if (master.get_digital_new_press(DIGITAL_R1)) {
+    //   liftControlTask.resume();
+    //   pros::delay(100);
+    //   target = 2000;
+    // }
 
     // if (master.get_digital_new_press(DIGITAL_L1)) {
     //   liftControlTask.resume();
@@ -293,7 +293,7 @@ void opcontrol() {
 
     // intake stuff
     if (master.get_digital(DIGITAL_R1)) {
-      intake.move(127);
+      intake.move(105);
     } else if (master.get_digital(DIGITAL_R2)) {
       liftControlTask.suspend();
       intake.move(-127);
