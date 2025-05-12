@@ -75,17 +75,18 @@ void safe_autos_blue() {
 // pros::delay(5000);
 
   ez::Piston leftDoinker('A', false);
-ez::Piston doinkerClaw('B', false);
+ez::Piston doinkerClaw('E', false);
+
 
   // leftDoinker.set(true);
-  // pros::delay(1000);
-  // leftDoinker.set(false);
-  // pros::delay(1000);
-  chassis.pid_drive_set(21_in, 127);
+  // // pros::delay(1000);
+  // // leftDoinker.set(false);
+  // // pros::delay(1000);
+  chassis.pid_drive_set(38_in, 127);
   chassis.pid_wait_until(4_in);
   leftDoinker.set(true);
   doinkerClaw.set(true);
-  pros::delay(350);
+  pros::delay(700);
   doinkerClaw.set(false);
   pros::delay(50);
   leftDoinker.set(false);
@@ -100,66 +101,66 @@ ez::Piston doinkerClaw('B', false);
   doinkerClaw.set(true);
 
 
-  chassis.pid_drive_set(-8_in, 80, true);
+  chassis.pid_drive_set(-10_in, 80, true);
   chassis.pid_wait();
 
   leftDoinker.set(false);
 
-  chassis.pid_turn_set(185_deg, TURN_SPEED);
-  chassis.pid_wait();
+  // chassis.pid_turn_set(185_deg, TURN_SPEED);
+  // chassis.pid_wait();
 
-  ladyBrown.move(100);
-  pros::delay(100);
-  ladyBrown.move(0);
+  // ladyBrown.move(100);
+  // pros::delay(100);
+  // ladyBrown.move(0);
 
-  pros::delay(500);
+  // pros::delay(500);
 
-  chassis.pid_drive_set(-13_in, 40, true);
-  chassis.pid_wait();
+  // chassis.pid_drive_set(-13_in, 40, true);
+  // chassis.pid_wait();
 
-  pros::delay(300);
+  // pros::delay(300);
 
-  clampPiston.set(true);
+  // clampPiston.set(true);
   
-  chassis.pid_turn_relative_set(-35_deg, TURN_SPEED);
-  chassis.pid_wait();
+  // chassis.pid_turn_relative_set(-35_deg, TURN_SPEED);
+  // chassis.pid_wait();
 
-  //FIX
-  ladyBrown.move(80);
-  pros::delay(50);
-  ladyBrown.brake();
+  // //FIX
+  // ladyBrown.move(80);
+  // pros::delay(50);
+  // ladyBrown.brake();
 
-  intake.move(127);
+  // intake.move(127);
 
-  chassis.pid_drive_set(24_in, 50, true);
-  chassis.pid_wait();
+  // chassis.pid_drive_set(24_in, 50, true);
+  // chassis.pid_wait();
 
-  chassis.pid_turn_set(-135_deg, TURN_SPEED);
-  chassis.pid_wait();
+  // chassis.pid_turn_set(-135_deg, TURN_SPEED);
+  // chassis.pid_wait();
 
-  intake.move(-127);
+  // intake.move(-127);
 
-  chassis.pid_drive_set(32_in, 55, true);
-  chassis.pid_wait();
+  // chassis.pid_drive_set(32_in, 55, true);
+  // chassis.pid_wait();
 
-  pros::delay(500);
+  // pros::delay(500);
 
-  intake.move(127);
+  // intake.move(127);
 
-  pros::delay(1500);
+  // pros::delay(1500);
 
-  chassis.pid_drive_set(-8_in, 30);
-  chassis.pid_wait();
+  // chassis.pid_drive_set(-8_in, 30);
+  // chassis.pid_wait();
 
-  chassis.pid_turn_set(45_deg, TURN_SPEED);
-  chassis.pid_wait();
+  // chassis.pid_turn_set(45_deg, TURN_SPEED);
+  // chassis.pid_wait();
 
-  chassis.pid_drive_set(50_in, 30);
-  chassis.pid_wait();
+  // chassis.pid_drive_set(50_in, 30);
+  // chassis.pid_wait();
 
-  ladyBrown.move(80);
-  pros::delay(500);
-  ladyBrown.brake();
+  // ladyBrown.move(80);
+  // pros::delay(500);
+  // ladyBrown.brake();
 
 
 }
