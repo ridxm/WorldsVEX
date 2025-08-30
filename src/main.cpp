@@ -1,6 +1,7 @@
 #include "main.h"
 
 #include "autons.hpp"
+#include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/rotation.hpp"
 #include "subsystems.hpp"
@@ -44,10 +45,9 @@ void initialize() {
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
 
   // Configure your chassis controls
-  chassis.opcontrol_curve_buttons_toggle(false);  // Enables modifying the controller curve with buttons on the joysticks
+  chassis.opcontrol_curve_buttons_toggle(true);  // Enables modifying the controller curve with buttons on the joysticks
   chassis.opcontrol_drive_activebrake_set(1.0);   // Sets the active brake kP. We recommend ~2.  0 will disable.
-  // chassis.opcontrol_curve_default_set(0.0, 0.0);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
-
+  chassis.opcontrol_curve_default_set(10, 10);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
   // Set the drive to your own constants from autons.cpp!
   default_constants();
 
@@ -220,8 +220,8 @@ void ez_template_extras() {
     //  When enabled:
     //  * use A and Y to increment / decrement the constants
     //  * use the arrow keys to navigate the constants
-    if (master.get_digital_new_press(DIGITAL_X))
-      chassis.pid_tuner_toggle();
+    // if (master.get_digital_new_press(DIGITAL_X))
+    //   chassis.pid_tuner_toggle();
 
     // Trigger the selected autonomous routine
     if (master.get_digital(DIGITAL_A) && master.get_digital(DIGITAL_LEFT)) {
@@ -273,11 +273,20 @@ void opcontrol() {
     ez_template_extras();
 
     // chassis.opcontrol_tank();  // Tank control
-    chassis.opcontrol_arcade_standard(ez::SPLIT);  // Standard split arcade
+    // chassis.opcontrol_arcade_standard(ez::SPLIT);  // Standard split arcade
     // chassis.opcontrol_arcade_standard(ez::SINGLE);  // Standard single arcade
     // chassis.opcontrol_arcade_flipped(ez::SPLIT);    // Flipped split arcade
     // chassis.opcontrol_arcade_flipped(ez::SINGLE);   // Flipped single arcade
 
+    int fwd  = master.get_analog(ANALOG_LEFT_Y);
+    int turn = master.get_analog(ANALOG_RIGHT_X);
+
+    // Half speed
+    int left  = (int)((fwd + turn) * 0.3);
+    int right = (int)((fwd - turn) * 0.3);
+
+    // Send to drivetrain (disables PID for direct control)
+    chassis.drive_set(left, right);
     // . . .
     // Put more user control code here!
     // . . .
@@ -309,7 +318,7 @@ void opcontrol() {
     }
 
     //lb movements
-    if (master.get_digital(DIGITAL_L2) && lb_rotation.get_position() < 13000) {
+    if (master.get_digital(DIGITAL_L2)) {
       liftControlTask.suspend();
       ladyBrown.move(127);
     } 
@@ -325,9 +334,28 @@ void opcontrol() {
 
     rightDoinker.set(master.get_digital(DIGITAL_Y));
 
-    leftDoinker.set(master.get_digital(DIGITAL_RIGHT));
+    // leftDoinker.set(master.get_digital(DIGITAL_RIGHT));
 
-    // flipperPiston.set(master.get_digital(DIGITAL_DOWN) && !rightDoinker.get() && !leftDoinker.get());
+    bool rushDown = false;
+
+    if(master.get_digital(DIGITAL_RIGHT)){
+      rushDown = true;
+    }
+    else{
+      rushDown = false;
+    }
+
+    if(rushDown == true){
+      doinkerClaw.set(true);
+      leftDoinker.set(true);
+
+    }
+    else{
+      doinkerClaw.set(false);
+      leftDoinker.set(false);
+
+
+    }
 
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }

@@ -16,9 +16,9 @@ inline ez::Piston clampPiston('C', false);
 // inline ez::Piston flipperPiston('E', false);
 inline ez::Piston rightDoinker('D', false);
 inline ez::Piston leftDoinker('A', false);
-inline ez::Piston doinkerClaw('B', false);
+inline ez::Piston doinkerClaw('E', false);
 
 // inline pros::Motor Doinker('A');
-inline pros::Motor flipperPiston('E');
+// inline pros::Motor flipperPiston('E');
 
 inline pros::adi::DigitalIn sensor ('H');
